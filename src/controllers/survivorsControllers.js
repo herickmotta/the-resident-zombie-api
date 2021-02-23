@@ -15,10 +15,24 @@ class SurvivorsController {
 
     const { id } = await Survivor.create({ name, gender });
     await LastLocation.create({ survivorId: id, ...lastLocation });
-    const promises = updatedResources.map((r) => SurvivorResource.create({ survivorId: id, resourceId: r.id, quantity: r.quantity }));
+    const promises = updatedResources.map((r) => (
+      SurvivorResource.create({ survivorId: id, resourceId: r.id, quantity: r.quantity })
+    ));
     await Promise.all(promises);
-
-    return Survivor.findOne({ where: { id }, includes: Resource });
+    return Survivor.findByPk(id, {
+      attributes: ['id', 'name', 'gender'],
+      include: [
+        {
+          model: Resource,
+          attributes: ['id', 'name', 'points'],
+          through: { attributes: ['quantity'] },
+        },
+        {
+          model: LastLocation,
+          as: 'lastLocation',
+          attributes: ['latitude', 'longitude'],
+        }],
+    });
   }
 
   validateAndUpdateResources(resources, allResources) {

@@ -10,29 +10,10 @@ app.use(cors());
 app.use(express.json());
 
 app.post('/survivors', async (req, res) => {
-  /*
-    {
-      name: 'string',
-      gender: 'male, female, other',
-      lastLocation: {
-        latitude: '',
-        longitude: '',
-      },
-      resources: [
-        {
-          name: 'item 1',
-          quantity: 1
-        },
-        {
-          name: 'item 2',
-          quantity: 1
-        }
-      ]
-    }
-  */
   const { error } = postSurvivor.validate(req.body);
   if (error) throw new InvalidDataError();
   const survivor = await survivorsControllers.createSurvivor(req.body);
+
   res.send(survivor);
 });
 
