@@ -19,7 +19,7 @@ Survivor.init({
     allowNull: false,
   },
   lastLocation: {
-    type: Sequelize.GEOMETRY,
+    type: Sequelize.GEOMETRY('POINT'),
     allowNull: false,
   },
   createdAt: Sequelize.DATE,
