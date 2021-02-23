@@ -1,9 +1,18 @@
 {
   "name": "the-resident-zombie-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.js",
   "author": "herickmotta <herickrossato@gmail.com>",
   "license": "MIT",
+  "scripts": {
+    "test": "jest --runInBand",
+    "unitTest": "jest -i unit",
+    "intTest": "jest -i int",
+    "build": "yarn sequelize-cli db:migrate",
+    "seeds": "sequelize-cli db:seed",
+    "dev": "nodemon ./src/server.js",
+    "start": "node src/server.js"
+  },
   "dependencies": {
     "cors": "^2.8.5",
     "dotenv": "^8.2.0",
@@ -16,5 +25,10 @@
     "sequelize": "^6.5.0",
     "sequelize-cli": "^6.2.0",
     "supertest": "^6.1.3"
+  },
+  "devDependencies": {
+    "eslint": "^7.15.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1"
   }
 }
