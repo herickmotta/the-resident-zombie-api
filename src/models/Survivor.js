@@ -18,10 +18,6 @@ Survivor.init({
     type: Sequelize.STRING,
     allowNull: false,
   },
-  lastLocation: {
-    type: Sequelize.GEOMETRY('POINT'),
-    allowNull: false,
-  },
   createdAt: Sequelize.DATE,
   updatedAt: Sequelize.DATE,
 

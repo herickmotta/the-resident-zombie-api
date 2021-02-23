@@ -1,13 +1,12 @@
 const dotenv = require('dotenv');
-const DB_URL = require('../src/config/constants');
 
 dotenv.config();
 
 module.exports = {
   development: {
-    url: DB_URL,
+    url: process.env.DATABASE_URL,
   },
   test: {
-    url: DB_URL,
+    url: process.env.DATABASE_URL,
   },
 };

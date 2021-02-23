@@ -9,6 +9,10 @@ module.exports = {
       },
       survivorId: {
         type: Sequelize.INTEGER,
+        references: {
+          model: 'survivors',
+          key: 'id',
+        },
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,

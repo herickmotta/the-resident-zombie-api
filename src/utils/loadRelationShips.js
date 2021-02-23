@@ -4,4 +4,4 @@ const Survivor = require('../models/Survivor');
 const SurvivorResource = require('../models/SurvivorResource');
 
 Survivor.hasMany(Flag);
-Survivor.hasMany(Resource, { throught: SurvivorResource });
+Survivor.belongsToMany(Resource, { through: SurvivorResource });

@@ -1,6 +1,6 @@
 module.exports = {
   up: async (queryInterface, Sequelize) => {
-    await queryInterface.createTable('survivorResources', {
+    await queryInterface.createTable('lastLocations', {
       id: {
         type: Sequelize.INTEGER,
         autoIncrement: true,
@@ -15,18 +15,13 @@ module.exports = {
           key: 'id',
         },
       },
-      resourceId: {
-        type: Sequelize.INTEGER,
+      latitude: {
+        type: Sequelize.STRING,
         allowNull: false,
-        references: {
-          model: 'resources',
-          key: 'id',
-        },
       },
-      quantity: {
-        type: Sequelize.INTEGER,
+      longitude: {
+        type: Sequelize.STRING,
         allowNull: false,
-        defaultValue: 0,
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE,
@@ -34,6 +29,6 @@ module.exports = {
   },
 
   down: async (queryInterface) => {
-    await queryInterface.dropTable('survivorResources');
+    await queryInterface.dropTable('lastLocations');
   },
 };

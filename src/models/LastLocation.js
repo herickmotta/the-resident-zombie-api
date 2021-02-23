@@ -1,9 +1,9 @@
 const { Sequelize } = require('sequelize');
 const sequelize = require('../utils/database');
 
-class SurvivorResource extends Sequelize.Model {}
+class LastLocation extends Sequelize.Model {}
 
-SurvivorResource.init({
+LastLocation.init({
   id: {
     type: Sequelize.INTEGER,
     autoIncrement: true,
@@ -14,12 +14,12 @@ SurvivorResource.init({
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  resourceId: {
-    type: Sequelize.INTEGER,
+  latitude: {
+    type: Sequelize.STRING,
     allowNull: false,
   },
-  quantity: {
-    type: Sequelize.INTEGER,
+  longitude: {
+    type: Sequelize.STRING,
     allowNull: false,
   },
   createdAt: Sequelize.DATE,
@@ -27,7 +27,7 @@ SurvivorResource.init({
 
 }, {
   sequelize,
-  modelName: 'survivorResource',
+  modelName: 'lastLocation',
 });
 
-module.exports = SurvivorResource;
+module.exports = LastLocation;
