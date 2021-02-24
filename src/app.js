@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+require('express-async-errors');
 const { postSurvivor, editSurvivorLocation } = require('./schemas/survivorSchemas');
 const InvalidDataError = require('./errors/InvalidDataError');
 const survivorsControllers = require('./controllers/survivorsControllers');
@@ -38,13 +39,25 @@ app.post('/survivors/:survivorId/flags/survivors/:infectedId', async (req, res) 
   res.sendStatus(200);
 });
 
+app.post('/survivors/:survivor1Id/trades/survivors/:survivor2Id', async (req, res) => {
+  const survivor1Id = +req.params.survivor1Id;
+  const survivor2Id = +req.params.survivor2Id;
+  await survivorsControllers.tradeBetweenSurvivors(survivor1Id, survivor2Id, req.body);
+  res.sendStatus(200);
+});
+
+app.get('/survivors/:id/resources', async (req, res) => {
+  const id = +req.params.id;
+  const inv = await survivorsControllers.getSurvivorInventory(id);
+  res.send(inv);
+});
+
 // eslint-disable-next-line no-unused-vars
 app.use((error, req, res, next) => {
-  console.log(error);
   if (error instanceof InvalidDataError) {
     return res.sendStatus(422);
   }
-  return res.sendStatus(500);
+  return res.status(500).send(error.message);
 });
 
 module.exports = app;

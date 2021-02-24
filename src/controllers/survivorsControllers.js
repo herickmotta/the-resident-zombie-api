@@ -1,11 +1,13 @@
 /* eslint-disable no-param-reassign */
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
+const TradeNotEqualError = require('../errors/TradeNotEqualError');
 const Flag = require('../models/Flag');
 const LastLocation = require('../models/LastLocation');
 const Resource = require('../models/Resource');
 const Survivor = require('../models/Survivor');
 const SurvivorResource = require('../models/SurvivorResource');
+const sequelize = require('../utils/database');
 
 class SurvivorsController {
   async createSurvivor(survivorParams) {
@@ -30,7 +32,7 @@ class SurvivorsController {
     return validIds.map((validId) => {
       const resource = resources.find((r) => r.id === validId);
       if (resource) {
-        return { id: validId, quantity: resource.id };
+        return { id: validId, quantity: resource.quantity };
       }
       return { id: validId, quantity: 0 };
     });
@@ -41,9 +43,13 @@ class SurvivorsController {
       attributes: ['id', 'name', 'gender', 'isInfected'],
       include: [
         {
-          model: Resource,
-          attributes: ['id', 'name', 'points'],
-          through: { attributes: ['quantity'] },
+          model: SurvivorResource,
+          as: 'resources',
+          attributes: ['resourceId', 'quantity'],
+          include: {
+            model: Resource,
+            attributes: ['id', 'name', 'points'],
+          },
         },
         {
           model: LastLocation,
@@ -82,6 +88,69 @@ class SurvivorsController {
       infected.isInfected = true;
       infected.save();
     }
+  }
+
+  async tradeBetweenSurvivors(survivor1Id, survivor2Id, tradeResources) {
+    const t = await sequelize.transaction();
+    try {
+      const { survivor1Offers, survivor2Offers } = tradeResources;
+      console.log(survivor1Offers, survivor2Offers);
+      await this.getSurvivorByPk(survivor1Id);
+      await this.getSurvivorByPk(survivor2Id);
+      const survivor1Inventory = await this.getSurvivorInventory(survivor1Id);
+      const survivor2Inventory = await this.getSurvivorInventory(survivor2Id);
+
+      await this.verifyIfTradeisEqual([survivor1Offers, survivor2Offers]);
+
+      let promises = survivor1Offers.map((offer) => {
+        const survivorResource = survivor1Inventory.find((sR) => sR.resourceId === offer.id);
+        console.log(survivorResource);
+        survivorResource.quantity -= offer.quantity;
+        return survivorResource.save({ transaction: t });
+      });
+      await Promise.all(promises);
+      promises = survivor1Offers.map((offer) => {
+        const survivorResource = survivor2Inventory.find((sR) => sR.resourceId === offer.id);
+        survivorResource.quantity += offer.quantity;
+        return survivorResource.save({ transaction: t });
+      });
+      await Promise.all(promises);
+
+      promises = survivor2Offers.map((offer) => {
+        const survivorResource = survivor2Inventory.find((sR) => sR.resourceId === offer.id);
+        survivorResource.quantity -= offer.quantity;
+        return survivorResource.save({ transaction: t });
+      });
+      await Promise.all(promises);
+
+      promises = survivor2Offers.map((offer) => {
+        const survivorResource = survivor1Inventory.find((sR) => sR.resourceId === offer.id);
+        survivorResource.quantity += offer.quantity;
+        return survivorResource.save({ transaction: t });
+      });
+      await Promise.all(promises);
+      await t.commit();
+    } catch (e) {
+      await t.rollback();
+      throw e;
+    }
+  }
+
+  async getSurvivorInventory(id) {
+    return SurvivorResource.findAll({ where: { survivorId: id } });
+  }
+
+  async verifyIfTradeisEqual(offers) {
+    const resources = await Resource.findAll();
+    const pointsTable = {};
+    resources.forEach((resource) => {
+      pointsTable[resource.id] = resource.points;
+    });
+    const sums = [0, 0];
+    offers[0].forEach((off) => { sums[0] += pointsTable[off.id] * off.quantity; });
+    offers[1].forEach((off) => { sums[1] += pointsTable[off.id] * off.quantity; });
+    console.log(sums);
+    if (sums[0] !== sums[1]) throw new TradeNotEqualError('Trade is not equal');
   }
 }
 

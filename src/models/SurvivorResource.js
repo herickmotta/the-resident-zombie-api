@@ -21,6 +21,9 @@ SurvivorResource.init({
   quantity: {
     type: Sequelize.INTEGER,
     allowNull: false,
+    validate: {
+      min: 0,
+    },
   },
   createdAt: Sequelize.DATE,
   updatedAt: Sequelize.DATE,
