@@ -1,5 +1,5 @@
 const router = require('express').Router();
-const survivorsControllers = require('../controllers/survivorsControllers');
+const survivorsControllers = require('../controllers/survivorsController');
 const InvalidDataError = require('../errors/InvalidDataError');
 const { postSurvivor, editSurvivorLocationSchema } = require('../schemas/survivorSchemas');
 

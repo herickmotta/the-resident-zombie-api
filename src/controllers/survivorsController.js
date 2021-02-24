@@ -96,7 +96,7 @@ class SurvivorsController {
       const { survivor1Offers, survivor2Offers } = tradeResources;
       const survivor1 = await this.getSurvivorByPk(survivor1Id);
       const survivor2 = await this.getSurvivorByPk(survivor2Id);
-      if (survivor1.isInfected || survivor2.isInfected) throw new UnauthorizedError("Infected survival can't trade");
+      if (survivor1.isInfected || survivor2.isInfected) throw new UnauthorizedError("Infected survivors can't trade");
       const survivor1Inventory = await this.getSurvivorInventory(survivor1Id);
       const survivor2Inventory = await this.getSurvivorInventory(survivor2Id);
 
