@@ -18,6 +18,10 @@ Survivor.init({
     type: Sequelize.STRING,
     allowNull: false,
   },
+  isInfected: {
+    type: Sequelize.BOOLEAN,
+    defaultValue: false,
+  },
   createdAt: Sequelize.DATE,
   updatedAt: Sequelize.DATE,
 

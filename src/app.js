@@ -14,6 +14,12 @@ app.post('/survivors', async (req, res) => {
   if (error) throw new InvalidDataError();
   const survivor = await survivorsControllers.createSurvivor(req.body);
 
+  res.status(201).send(survivor);
+});
+
+app.get('/survivors/:id', async (req, res) => {
+  const id = +req.params.id;
+  const survivor = await survivorsControllers.getSurvivorByPk(id);
   res.send(survivor);
 });
 
@@ -23,6 +29,13 @@ app.put('/survivors/:id/lastlocations', async (req, res) => {
   const id = +req.params.id;
   const survivor = await survivorsControllers.editSurvivorLocation(id, req.body.lastLocation);
   res.send(survivor);
+});
+
+app.post('/survivors/:survivorId/flags/survivors/:infectedId', async (req, res) => {
+  const survivorId = +req.params.survivorId;
+  const infectedId = +req.params.infectedId;
+  await survivorsControllers.flagSurvivorAsInfected(survivorId, infectedId);
+  res.sendStatus(200);
 });
 
 // eslint-disable-next-line no-unused-vars

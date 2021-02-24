@@ -1,5 +1,7 @@
 /* eslint-disable no-param-reassign */
+const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
+const Flag = require('../models/Flag');
 const LastLocation = require('../models/LastLocation');
 const Resource = require('../models/Resource');
 const Survivor = require('../models/Survivor');
@@ -36,7 +38,7 @@ class SurvivorsController {
 
   async getSurvivorByPk(id) {
     const survivor = await Survivor.findByPk(id, {
-      attributes: ['id', 'name', 'gender'],
+      attributes: ['id', 'name', 'gender', 'isInfected'],
       include: [
         {
           model: Resource,
@@ -61,6 +63,25 @@ class SurvivorsController {
     location.longitude = newLocation.longitude;
     await location.save();
     return this.getSurvivorByPk(survivorId);
+  }
+
+  async flagSurvivorAsInfected(survivorId, infectedId) {
+    if (survivorId === infectedId) {
+      throw new ConflictError();
+    }
+
+    const survivor = await Survivor.findByPk(survivorId);
+    if (!survivor) throw new NotFoundError();
+
+    const infected = await Survivor.findByPk(infectedId);
+    if (!infected) throw new NotFoundError();
+
+    await Flag.create({ survivorId: infectedId });
+    const flags = await Flag.findAll({ where: { survivorId: infectedId } });
+    if (flags.length >= 5) {
+      infected.isInfected = true;
+      infected.save();
+    }
   }
 }
 
