@@ -72,9 +72,7 @@ class SurvivorsController {
   }
 
   async flagSurvivorAsInfected(survivorId, infectedId) {
-    if (survivorId === infectedId) {
-      throw new ConflictError();
-    }
+    if (survivorId === infectedId) throw new ConflictError();
 
     const survivor = await Survivor.findByPk(survivorId);
     if (!survivor) throw new NotFoundError();
@@ -93,8 +91,9 @@ class SurvivorsController {
   async tradeBetweenSurvivors(survivor1Id, survivor2Id, tradeResources) {
     const t = await sequelize.transaction();
     try {
+      if (survivor1Id === survivor2Id) throw new ConflictError('Trade with yourself is forbidden');
+
       const { survivor1Offers, survivor2Offers } = tradeResources;
-      console.log(survivor1Offers, survivor2Offers);
       await this.getSurvivorByPk(survivor1Id);
       await this.getSurvivorByPk(survivor2Id);
       const survivor1Inventory = await this.getSurvivorInventory(survivor1Id);
@@ -149,7 +148,7 @@ class SurvivorsController {
     const sums = [0, 0];
     offers[0].forEach((off) => { sums[0] += pointsTable[off.id] * off.quantity; });
     offers[1].forEach((off) => { sums[1] += pointsTable[off.id] * off.quantity; });
-    console.log(sums);
+
     if (sums[0] !== sums[1]) throw new TradeNotEqualError('Trade is not equal');
   }
 }
