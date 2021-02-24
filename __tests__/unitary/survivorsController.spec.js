@@ -1,5 +1,4 @@
 /* eslint-disable no-undef */
-const sequelize = require('sequelize');
 
 jest.mock('../../src/models/Survivor');
 const Survivor = require('../../src/models/Survivor');
@@ -17,7 +16,6 @@ const survivorsController = require('../../src/controllers/survivorsController')
 const NotFoundError = require('../../src/errors/NotFoundError');
 const ConflictError = require('../../src/errors/ConflictError');
 const TradeNotEqualError = require('../../src/errors/TradeNotEqualError');
-const UnauthorizedError = require('../../src/errors/UnauthorizedError');
 
 describe('survivorController.createSurvivor', () => {
   it('Should create a survivor without errors', async () => {

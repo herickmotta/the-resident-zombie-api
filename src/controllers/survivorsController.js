@@ -104,7 +104,6 @@ class SurvivorsController {
 
       let promises = survivor1Offers.map((offer) => {
         const survivorResource = survivor1Inventory.find((sR) => sR.resourceId === offer.id);
-        console.log(survivorResource);
         survivorResource.quantity -= offer.quantity;
         return survivorResource.save({ transaction: t });
       });
