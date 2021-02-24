@@ -1,4 +1,5 @@
 /* eslint-disable no-param-reassign */
+const NotFoundError = require('../errors/NotFoundError');
 const LastLocation = require('../models/LastLocation');
 const Resource = require('../models/Resource');
 const Survivor = require('../models/Survivor');
@@ -19,7 +20,22 @@ class SurvivorsController {
       SurvivorResource.create({ survivorId: id, resourceId: r.id, quantity: r.quantity })
     ));
     await Promise.all(promises);
-    return Survivor.findByPk(id, {
+    return this.getSurvivorByPk(id);
+  }
+
+  validateAndUpdateResources(resources, allResources) {
+    const validIds = allResources.map((r) => r.id);
+    return validIds.map((validId) => {
+      const resource = resources.find((r) => r.id === validId);
+      if (resource) {
+        return { id: validId, quantity: resource.id };
+      }
+      return { id: validId, quantity: 0 };
+    });
+  }
+
+  async getSurvivorByPk(id) {
+    const survivor = await Survivor.findByPk(id, {
       attributes: ['id', 'name', 'gender'],
       include: [
         {
@@ -33,17 +49,18 @@ class SurvivorsController {
           attributes: ['latitude', 'longitude'],
         }],
     });
+    if (!survivor) throw new NotFoundError();
+    return survivor;
   }
 
-  validateAndUpdateResources(resources, allResources) {
-    const validIds = allResources.map((r) => r.id);
-    return validIds.map((validId) => {
-      const resource = resources.find((r) => r.id === validId);
-      if (resource) {
-        return { id: validId, quantity: resource.id };
-      }
-      return { id: validId, quantity: 0 };
-    });
+  async editSurvivorLocation(survivorId, newLocation) {
+    const survivor = await this.getSurvivorByPk(survivorId);
+    if (!survivor) throw new NotFoundError();
+    const location = await LastLocation.findOne({ where: { survivorId } });
+    location.latitude = newLocation.latitude;
+    location.longitude = newLocation.longitude;
+    await location.save();
+    return this.getSurvivorByPk(survivorId);
   }
 }
 

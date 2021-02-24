@@ -12,6 +12,14 @@ const postSurvivor = Joi.object({
 
 });
 
+const editSurvivorLocation = Joi.object({
+  lastLocation: Joi.object().keys({
+    latitude: Joi.string(),
+    longitude: Joi.string(),
+  }),
+});
+
 module.exports = {
   postSurvivor,
+  editSurvivorLocation,
 };
