@@ -2,6 +2,7 @@
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 const TradeNotEqualError = require('../errors/TradeNotEqualError');
+const UnauthorizedError = require('../errors/UnauthorizedError');
 const Flag = require('../models/Flag');
 const LastLocation = require('../models/LastLocation');
 const Resource = require('../models/Resource');
@@ -92,10 +93,10 @@ class SurvivorsController {
     const t = await sequelize.transaction();
     try {
       if (survivor1Id === survivor2Id) throw new ConflictError('Trade with yourself is forbidden');
-
       const { survivor1Offers, survivor2Offers } = tradeResources;
-      await this.getSurvivorByPk(survivor1Id);
-      await this.getSurvivorByPk(survivor2Id);
+      const survivor1 = await this.getSurvivorByPk(survivor1Id);
+      const survivor2 = await this.getSurvivorByPk(survivor2Id);
+      if (survivor1.isInfected || survivor2.isInfected) throw new UnauthorizedError("Infected survival can't trade");
       const survivor1Inventory = await this.getSurvivorInventory(survivor1Id);
       const survivor2Inventory = await this.getSurvivorInventory(survivor2Id);
 
