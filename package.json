@@ -5,7 +5,7 @@
   "author": "herickmotta <herickrossato@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "test": "jest --runInBand",
+    "test": "jest --runInBand -i",
     "unitTest": "jest -i unit",
     "intTest": "jest -i int",
     "build": "yarn sequelize-cli db:migrate",
