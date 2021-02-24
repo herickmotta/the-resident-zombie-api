@@ -38,6 +38,26 @@ class ReportsController {
       'average-per-survivor': entry[1].counter.reduce((a, b) => a + b, 0) / entry[1].counter.length,
     }));
   }
+
+  async getPointsInfo() {
+    let pointsCounter = 0;
+    let lostPointsCounter = 0;
+    const survivorsResources = await SurvivorResource.findAll({
+      include: [{ model: Survivor }, { model: Resource }],
+    });
+
+    survivorsResources.forEach((sR) => {
+      pointsCounter += sR.resource.points * sR.quantity;
+      if (sR.survivor.isInfected) {
+        lostPointsCounter += sR.resource.points * sR.quantity;
+      }
+    });
+
+    return {
+      total: pointsCounter,
+      'lost-to-infected': lostPointsCounter,
+    };
+  }
 }
 
 module.exports = new ReportsController();

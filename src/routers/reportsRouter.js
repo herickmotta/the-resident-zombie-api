@@ -8,10 +8,11 @@ router.get('/survivors', async (req, res) => {
 
 router.get('/resources', async (req, res) => {
   const resources = await reportsController.getResourcesInfo();
-  res.send(resources);
+  res.send({ resources });
 });
 
-router.get('/points', (req, res) => {
-
+router.get('/points', async (req, res) => {
+  const points = await reportsController.getPointsInfo();
+  res.send({ points });
 });
 module.exports = router;
