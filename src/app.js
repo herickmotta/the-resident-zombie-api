@@ -7,6 +7,7 @@ const InvalidDataError = require('./errors/InvalidDataError');
 
 const survivorRouter = require('./routers/survivorsRouter');
 const reportsRouter = require('./routers/reportsRouter');
+const resourceRouter = require('./routers/resourcesRouter');
 const NotFoundError = require('./errors/NotFoundError');
 const ConflictError = require('./errors/ConflictError');
 const UnauthorizedError = require('./errors/UnauthorizedError');
@@ -15,7 +16,7 @@ const TradeNotEqualError = require('./errors/TradeNotEqualError');
 const app = express();
 app.use(cors());
 app.use(express.json());
-
+app.use('/resources', resourceRouter);
 app.use('/survivors', survivorRouter);
 app.use('/reports', reportsRouter);
 // eslint-disable-next-line no-unused-vars
