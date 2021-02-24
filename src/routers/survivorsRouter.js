@@ -39,10 +39,4 @@ router.post('/:survivor1Id/trades/survivors/:survivor2Id', async (req, res) => {
   res.sendStatus(200);
 });
 
-router.get('/:id/resources', async (req, res) => {
-  const id = +req.params.id;
-  const inv = await survivorsControllers.getSurvivorInventory(id);
-  res.send(inv);
-});
-
 module.exports = router;
