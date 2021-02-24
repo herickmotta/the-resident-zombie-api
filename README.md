@@ -31,4 +31,5 @@ https://www.notion.so/THZ-ENDPOINTS-b8d635b7751d4fcfb90fc8eb6fb9c655
 - "yarn build" to run migrations
 - "yarn seeds" to init resources
 - "yarn start" to start listening
+- "yarn tests" to start testing
 
